@@ -1,5 +1,5 @@
 import flet as ft
-
+import math
 
 class CalcButton(ft.ElevatedButton):
     def __init__(self, text, button_clicked, expand=1):
@@ -32,7 +32,6 @@ class ExtraActionButton(CalcButton):
 
 
 class CalculatorApp(ft.Container):
-    # application's root control (i.e. "view") containing all other controls
     def __init__(self):
         super().__init__()
         self.reset()
@@ -45,6 +44,7 @@ class CalculatorApp(ft.Container):
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[self.result], alignment="end"),
+                # First Row with scientific buttons
                 ft.Row(
                     controls=[
                         ExtraActionButton(
@@ -57,6 +57,7 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="/", button_clicked=self.button_clicked),
                     ]
                 ),
+              
                 ft.Row(
                     controls=[
                         DigitButton(text="7", button_clicked=self.button_clicked),
@@ -90,12 +91,29 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
+                # sin, cos, tan, √x　の行
+                ft.Row(
+                    controls=[
+                        ExtraActionButton("sin", self.button_clicked),
+                        ExtraActionButton("cos", self.button_clicked),
+                        ExtraActionButton("tan", self.button_clicked),
+                        ExtraActionButton("√x", self.button_clicked),
+                    ]
+                ),
+               # log, lnの関数ボタン
+                ft.Row(
+                    controls=[
+                        ExtraActionButton("log", self.button_clicked),
+                        ExtraActionButton("ln", self.button_clicked),
+                    ]
+                ),
             ]
         )
 
     def button_clicked(self, e):
         data = e.control.data
         print(f"Button clicked with data = {data}")
+        
         if self.result.value == "Error" or data == "AC":
             self.result.value = "0"
             self.reset()
@@ -131,11 +149,26 @@ class CalculatorApp(ft.Container):
         elif data in ("+/-"):
             if float(self.result.value) > 0:
                 self.result.value = "-" + str(self.result.value)
-
             elif float(self.result.value) < 0:
-                self.result.value = str(
-                    self.format_number(abs(float(self.result.value)))
-                )
+                self.result.value = str(abs(float(self.result.value)))
+
+        # Scientific functions (sin, cos, tan, sqrt, log, ln)
+        elif data in ("sin", "cos", "tan", "√x", "log", "ln"):
+            try:
+                if data == "sin":
+                    self.result.value = str(math.sin(math.radians(float(self.result.value))))
+                elif data == "cos":
+                    self.result.value = str(math.cos(math.radians(float(self.result.value))))
+                elif data == "tan":
+                    self.result.value = str(math.tan(math.radians(float(self.result.value))))
+                elif data == "√x":
+                    self.result.value = str(math.sqrt(float(self.result.value)))
+                elif data == "log":
+                    self.result.value = str(math.log10(float(self.result.value)))
+                elif data == "ln":
+                    self.result.value = str(math.log(float(self.result.value)))
+            except ValueError:
+                self.result.value = "Error"
 
         self.update()
 
@@ -146,16 +179,12 @@ class CalculatorApp(ft.Container):
             return num
 
     def calculate(self, operand1, operand2, operator):
-
         if operator == "+":
             return self.format_number(operand1 + operand2)
-
         elif operator == "-":
             return self.format_number(operand1 - operand2)
-
         elif operator == "*":
             return self.format_number(operand1 * operand2)
-
         elif operator == "/":
             if operand2 == 0:
                 return "Error"
@@ -169,11 +198,8 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calc App"
-    # create application instance
+    page.title = "Calculator App"
     calc = CalculatorApp()
-
-    # add application's root control to the page
     page.add(calc)
 
 
