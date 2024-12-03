@@ -181,3 +181,32 @@ def main(page: ft.Page):
                 collapsed_text_color=ft.colors.GREY,
             )
         )
+
+        region_list = ft.Container(
+        content=ft.Column(
+            controls=center_tiles,
+            scroll=ft.ScrollMode.AUTO,
+        ),
+        width=250,
+        bgcolor=ft.colors.YELLOW_50,
+        padding=10,
+        margin=ft.margin.only(left=10, top=10, bottom=10),
+    )
+
+    # レイアウト
+    page.add(
+        ft.Column(
+            controls=[
+                header,
+                ft.Row(
+                    controls=[
+                        region_list,
+                        ft.Container(content=weather_display, expand=True, padding=10),
+                    ],
+                    expand=True,
+                ),
+            ],
+            expand=True,
+        )
+    )
+
