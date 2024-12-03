@@ -82,3 +82,31 @@ def get_weather_text(code: str) -> str:
         "110":"晴れのち時々曇り",
     }
     return weather_codes.get(code, f"不明な天気 (コード: {code})")
+
+def main(page: ft.Page):
+    page.title = "天気予報アプリ"
+    page.scroll = ft.ScrollMode.AUTO
+    page.bgcolor = ft.colors.LIGHT_BLUE_50
+
+    # ヘッダーにタイトル
+    header = ft.Container(
+        content=ft.Text("日本の天気予報", size=30, weight="bold", color=ft.colors.WHITE),
+        padding=20,
+        bgcolor=ft.colors.CYAN_800,
+        alignment=ft.alignment.center,
+        border_radius=ft.border_radius.all(5),
+    )
+
+    # JSONデータを読み込む
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        page.add(ft.Text("JSONファイルが見つかりません。", color=ft.colors.RED))
+        return
+    except json.JSONDecodeError as e:
+        page.add(ft.Text(f"JSONデータの読み込みに失敗しました: {e}", color=ft.colors.RED))
+        return
+
+    centers = data.get("centers", {})
+    offices = data.get("offices", {})
