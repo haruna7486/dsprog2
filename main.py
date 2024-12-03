@@ -7,3 +7,8 @@ from datetime import datetime
 # 定数を定義
 DATA_FILE = "jma/weather_info.json"
 WEATHER_API_URL = "https://www.jma.go.jp/bosai/forecast/data/forecast/{office_code}.json"
+
+# 日付フォーマット関数
+def format_date(date_str: str) -> str:
+    date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+    return date.strftime("%Y年%m月%d日")
