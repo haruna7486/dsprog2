@@ -151,3 +151,33 @@ def main(page: ft.Page):
             weather_display.controls.append(ft.Text(f"天気情報の取得に失敗しました: {e}", color=ft.colors.RED))
 
         page.update()
+
+# 左側のリスト
+    center_tiles = []
+    for center_key, center_info in centers.items():
+        # そのセンターに関連するオフィスを取得
+        related_offices = [
+            offices[office_key]
+            for office_key in center_info.get("children", [])
+            if office_key in offices
+        ]
+
+        office_tiles = [
+            ft.ListTile(
+                title=ft.Text(f"{offices[office_key]['name']} ({offices[office_key]['enName']})"),
+                on_click=lambda e, office_code=office_key: display_weather(office_code),
+            )
+            for office_key in center_info.get("children", [])
+            if office_key in offices
+        ]
+
+        # ExpansionTile
+        center_tiles.append(
+            ft.ExpansionTile(
+                title=ft.Text(center_info["name"], color=ft.colors.BLACK),
+                controls=office_tiles,
+                initially_expanded=False,
+                text_color=ft.colors.BLACK,
+                collapsed_text_color=ft.colors.GREY,
+            )
+        )
