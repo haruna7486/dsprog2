@@ -110,3 +110,44 @@ def main(page: ft.Page):
 
     centers = data.get("centers", {})
     offices = data.get("offices", {})
+
+# 天気情報を表示する領域
+    weather_display = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
+
+    # 天気情報を取得して表示する関数
+    def display_weather(office_code: str):
+        weather_display.controls.clear()
+        try:
+            # 天気情報を取得
+            response = requests.get(WEATHER_API_URL.format(office_code=office_code))
+            response.raise_for_status()
+            weather_data = response.json()
+
+            # 天気情報を表示
+            for i, day in enumerate(weather_data[0]["timeSeries"][0]["timeDefines"]):
+                date = format_date(day)
+                # i 番目の天気コードを取得
+                weather_code = weather_data[0]["timeSeries"][0]["areas"][0]["weatherCodes"][i]
+                weather_display.controls.append(
+                    ft.Card(
+                        content=ft.Container(
+                            content=ft.Column(
+                                [
+                                    ft.Text(date, size=16, weight="bold"),
+                                    ft.Text(get_weather_icon(weather_code), size=50),
+                                    ft.Text(get_weather_text(weather_code), size=18),
+                                    ft.Text(f"天気コード: {weather_code}", size=14, color=ft.colors.GREY),
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                            ),
+                            padding=15,
+                            bgcolor=ft.colors.WHITE,
+                            border_radius=10,
+                            shadow=ft.BoxShadow(blur_radius=5, color=ft.colors.GREY)
+                        )
+                    )
+                )
+        except Exception as e:
+            weather_display.controls.append(ft.Text(f"天気情報の取得に失敗しました: {e}", color=ft.colors.RED))
+
+        page.update()
