@@ -210,3 +210,5 @@ def main(page: ft.Page):
         )
     )
 
+# 実行
+ft.app(target=main)
